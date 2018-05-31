@@ -367,7 +367,7 @@ class run_model:
 
             len_vocab = self.dataset.length_vocab()
             initial_embeddings = self.dataset.vocab.embeddings
-
+            print(len_vocab)
             self.add_placeholders()
 
             # Build a Graph that computes predictions from the inference model.
@@ -441,7 +441,7 @@ class run_model:
                     print ("Results are getting no better. Early Stopping")
                     break
 
-                print ("Epoch: {} Training Loss: {} Validation Loss: {} Total time:{}".format(Epoch, train_loss, valid_loss, time.time() - start))
+                print ("Epoch: {} Training Loss: {} Validation Loss: {} Total time:{}".format(epoch, train_loss, valid_loss, time.time() - start))
 
             saver.restore(sess, self.config.outdir + 'best_model')
             test_loss = self.do_eval(sess, self.dataset.datasets["test"])
