@@ -18,9 +18,9 @@ import os
 
 def main():
     parser = OptionParser()
- 
+
     parser.add_option(
-    "-w", "--work-dir", dest="wd", default="../Data/")
+        "-w", "--work-dir", dest="wd", default="../Data/")
     parser.add_option(
         "-l", "--learning-rate", dest="lr", default=0.0001)
     parser.add_option(
@@ -49,27 +49,27 @@ def main():
 
 
     parser.add_option(
-	"-p", "--vocab-freq", help = "The frequency cutoff for the vocabulary" , dest="vocab_frequency")
+        "-p", "--vocab-freq", help = "The frequency cutoff for the vocabulary" , dest="vocab_frequency")
     parser.add_option(
-	"-m", "--num-fields", help = "Number of field cutoff set for the wikiinfobox", dest="num_fields")
+        "-m", "--num-fields", help = "Number of field cutoff set for the wikiinfobox", dest="num_fields")
 
     parser.add_option(
-	"-f", "--feed-previous", help = " Epoch after which feed previous will be set to true",  dest="feed_previous")
+        "-f", "--feed-previous", help = " Epoch after which feed previous will be set to true",  dest="feed_previous")
 
     parser.add_option(
-    "-d", "--embedding-dir", help = "Directory that contains the embedding file", dest="embedding_dir")
-
-
-    parser.add_option(
-    "-k", "--is-stay-nlb", help = " Whether to keep SO-NLB module", dest="is_stay_nlb")
+        "-d", "--embedding-dir", help = "Directory that contains the embedding file", dest="embedding_dir")
 
 
     parser.add_option(
-    "-u", "--num-tokens-per-field",help = "Cutoff for maximum number of tokens in a field",  dest="number_of_tokens_per_field")
+        "-k", "--is-stay-nlb", help = " Whether to keep SO-NLB module", dest="is_stay_nlb")
 
 
     parser.add_option(
-    "-c", "--print_frequency",help = "Print after these number of steps",  dest="print_frequency")
+        "-u", "--num-tokens-per-field",help = "Cutoff for maximum number of tokens in a field",  dest="number_of_tokens_per_field")
+
+
+    parser.add_option(
+        "-c", "--print_frequency",help = "Print after these number of steps",  dest="print_frequency")
 
     (option, args) = parser.parse_args(sys.argv)
 
@@ -78,16 +78,16 @@ def main():
     if (option.emb_tr == "True"):
         x = True
     else:
-        x = False 
+        x = False
 
     if (option.is_stay_nlb == 'True'):
-    	is_stay_nlb = True
+        is_stay_nlb = True
     else:
-    	is_stay_nlb = False
+        is_stay_nlb = False
     c = Config(float(option.lr), int(option.emb_size), int(option.hid_size), int(option.batch_size),
-                int(option.epochs), early_stop=int(option.early_stop), outdir= option.outdir, emb_tr=x, feed_previous=int(option.feed_previous), 
-		num_fields = int(option.num_fields), vocab_frequency=int(option.vocab_frequency), embedding_dir = option.embedding_dir, is_stay_nlb = is_stay_nlb,
-		number_of_tokens_per_field = int(option.number_of_tokens_per_field), print_frequency=int(option.print_frequency))
+               int(option.epochs), early_stop=int(option.early_stop), outdir= option.outdir, emb_tr=x, feed_previous=int(option.feed_previous),
+               num_fields = int(option.num_fields), vocab_frequency=int(option.vocab_frequency), embedding_dir = option.embedding_dir, is_stay_nlb = is_stay_nlb,
+               number_of_tokens_per_field = int(option.number_of_tokens_per_field), print_frequency=int(option.print_frequency))
 
 
     run_attention = run_inference(option.wd, BasicAttention(), c)

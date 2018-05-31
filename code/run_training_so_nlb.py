@@ -16,12 +16,12 @@ class Config:
 
     """ Config class represents the hyperparameters in a single
         object
-    """ 
+    """
 
     def __init__(self, learning_rate=0.0001, embedding_size=50, hidden_size=100,
-               batch_size = 64,max_epochs = 20, max_sequence_length_content = 100, num_fields  = 20,
-               max_sequence_length_title=50, early_stop=100, outdir="../out/",
-               emb_tr=False, feed_previous = 5, vocab_frequency=74, embedding_dir = "../Data",is_stay_nlb = False, number_of_tokens_per_field = 5, print_frequency = 1000):
+                 batch_size = 64,max_epochs = 20, max_sequence_length_content = 100, num_fields  = 20,
+                 max_sequence_length_title=50, early_stop=100, outdir="../out/",
+                 emb_tr=False, feed_previous = 5, vocab_frequency=74, embedding_dir = "../Data",is_stay_nlb = False, number_of_tokens_per_field = 5, print_frequency = 1000):
 
         """ Initialize the object with the parameters.
 
@@ -38,7 +38,7 @@ class Config:
         """
 
 
-	print ("Config", emb_tr)
+        print ("Config", emb_tr)
         config_file = open(outdir + "/config", "w")
 
         self.learning_rate = learning_rate
@@ -51,13 +51,13 @@ class Config:
         self.max_epochs = max_epochs
         self.outdir     = outdir
         self.is_stay_nlb = is_stay_nlb
-	self.number_of_tokens_per_field = number_of_tokens_per_field
+        self.number_of_tokens_per_field = number_of_tokens_per_field
         self.emb_tr     = emb_tr
         self.early_stop = early_stop
-	self.embedding_dir = embedding_dir
-	self.vocab_frequency = vocab_frequency
-	self.feed_previous = feed_previous
-	self.print_frequency = print_frequency
+        self.embedding_dir = embedding_dir
+        self.vocab_frequency = vocab_frequency
+        self.feed_previous = feed_previous
+        self.print_frequency = print_frequency
         config_file.write("Learning rate " + str(self.learning_rate) + "\n")
         config_file.write("Embedding size " + str(self.embedding_size) + "\n")
         config_file.write("hidden size " + str(self.hidden_size) + "\n")
@@ -67,7 +67,7 @@ class Config:
         config_file.write("Early stop " + str(self.early_stop) + "\n")
         config_file.write("Embedding training" + str(self.emb_tr) + "\n")
         config_file.write("Feed Previous " + str(self.feed_previous) + "\n")
-        config_file.close() 
+        config_file.close()
 
 
 class run_model:
@@ -124,13 +124,13 @@ class run_model:
         """
 
         feed_dict = {
-        self.encode_input_placeholder : encoder_inputs,
-        self.decode_input_placeholder : decoder_inputs,
-        self.label_placeholder        : labels,
-        self.field_input_placeholder  : field, 
-        self.sequence_length_input_placeholder  : sequence_length, 
-        self.weights_placeholder      : weights,
-        self.feed_previous_placeholder: feed_previous,
+            self.encode_input_placeholder : encoder_inputs,
+            self.decode_input_placeholder : decoder_inputs,
+            self.label_placeholder        : labels,
+            self.field_input_placeholder  : field,
+            self.sequence_length_input_placeholder  : sequence_length,
+            self.weights_placeholder      : weights,
+            self.feed_previous_placeholder: feed_previous,
         }
 
         return feed_dict
@@ -190,8 +190,8 @@ class run_model:
             duration = time.time() - start_time
 
 
-	    #print ("Final outputs", len(outputs))
-	    #print (sess.run(tf.shape(outputs[0])))
+            #print ("Final outputs", len(outputs))
+            #print (sess.run(tf.shape(outputs[0])))
             #print('Trainable Variables') 
             #print ('\n'.join([v.name for v in tf.trainable_variables()]))
 
@@ -200,10 +200,10 @@ class run_model:
             #    print (x_shape.shape)
 
 
-	    #x = sess.run(self.model.grad, feed_dict = feed_dict)	
+            #x = sess.run(self.model.grad, feed_dict = feed_dict)
             #print (x)
 
-	    #print ("Loss value ", loss_value, " " , step)
+            #print ("Loss value ", loss_value, " " , step)
             sys.stdout.flush()
             # Check the loss with forward propogation
             if (step + 1 == steps_per_epoch ) or ((step  + 1) % self.config.print_frequency == 0):
@@ -214,7 +214,7 @@ class run_model:
                 # Evaluate against the training set.
                 print('Training Data Eval:')
                 self.print_titles(sess, self.dataset.datasets["train"], 2)
-                    
+
                 # Evaluate against the validation set.
                 print('Step %d: loss = %.2f' % (step, loss_value))
                 print('Validation Data Eval:')
@@ -237,15 +237,15 @@ class run_model:
 
             Returns
                 Loss value : loss value for the given dataset.
-        """  
+        """
 
         total_loss = 0
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in range(steps_per_epoch): 
+        for step in range(steps_per_epoch):
             train_content, train_title, train_labels, train_field, sequence_length, train_weights, max_content, max_title = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
-            
+
             feed_dict  = self.fill_feed_dict(train_content, train_title, train_labels,  train_field, sequence_length,  train_weights, feed_previous = True)
             loss_value = sess.run(self.loss_op, feed_dict=feed_dict)
             total_loss += loss_value
@@ -284,12 +284,12 @@ class run_model:
             #print ('attention_weights_fields', attention_weights_fields) 
 
             attention_states = np.array([np.argmax(i,1) for i in attention_weights])
-           # Pack the list of size max_sequence_length to a tensor
+            # Pack the list of size max_sequence_length to a tensor
             decoder_states = np.array([np.argmax(i,1) for i in _decoder_states_])
             awf.append(attention_weights_fields)
             # tensor will be converted to [batch_size * sequence_length * symbols]
             ds = np.transpose(decoder_states)
-            attn_state = np.transpose(attention_states)   
+            attn_state = np.transpose(attention_states)
             true_labels = np.transpose(train_labels)
             # Converts this to a length of batch sizes
             final_ds = ds.tolist()
@@ -307,7 +307,7 @@ class run_model:
                 f1.write(t +"\n")
                 x = " ".join(str(m) for m in final_as[i])
                 f2.write(x + "\n")
-        
+
         pickle.dump(awf, open(self.config.outdir + data_set.name + "_awf", "wb"))
 
     def print_titles(self, sess, data_set, total_examples):
@@ -369,10 +369,10 @@ class run_model:
 
             # Build a Graph that computes predictions from the inference model.
             self.logits, self.attention_weights, self.attention_weights_fields  = self.model.inference(self.encode_input_placeholder, self.decode_input_placeholder,
-                                          self.field_input_placeholder, self.sequence_length_input_placeholder,  self.config.embedding_size,
-                                          self.feed_previous_placeholder, len_vocab, self.config.hidden_size,
-                                          weights = self.weights_placeholder, initial_embedding=initial_embeddings, 
-                                          embedding_trainable=self.config.emb_tr, config=self.config)
+                                                                                                       self.field_input_placeholder, self.sequence_length_input_placeholder,  self.config.embedding_size,
+                                                                                                       self.feed_previous_placeholder, len_vocab, self.config.hidden_size,
+                                                                                                       weights = self.weights_placeholder, initial_embedding=initial_embeddings,
+                                                                                                       embedding_trainable=self.config.emb_tr, config=self.config)
 
             # Add to the Graph the Ops for loss calculation.
             self.loss_op = self.model.loss_op(self.logits, self.label_placeholder, self.weights_placeholder, len_vocab)
@@ -384,7 +384,7 @@ class run_model:
             # Add the variable initializer Op.
             init = tf.initialize_all_variables()
             print ("Init done")
-         
+
             # Create a saver for writing training checkpoints.
             saver = tf.train.Saver()
 
@@ -413,7 +413,7 @@ class run_model:
             else:
                 # Run the Op to initialize the variables.
                 sess.run(init)
-	        best_val_loss = float('inf')
+                best_val_loss = float('inf')
 
             # To store the model that gives the best result on validation.
             best_val_epoch = 0
@@ -425,10 +425,10 @@ class run_model:
 
                 #print('Trainable Variables') 
                 #for i in tf.trainable_variables():
-		#	print (i.name)
-		#        print (sess.run(tf.shape(i)))
-		#        print (sess.run(i))
-                
+                #	print (i.name)
+                #        print (sess.run(tf.shape(i)))
+                #        print (sess.run(i))
+
                 #Do a forward propogation for valid dataset
                 train_loss = self.run_epoch(epoch, sess)
                 valid_loss = self.do_eval(sess, self.dataset.datasets["valid"])
@@ -459,9 +459,9 @@ class run_model:
 
 def main():
     parser = OptionParser()
- 
+
     parser.add_option(
-    "-w", "--work-dir", dest="wd", default="../Data/")
+        "-w", "--work-dir", dest="wd", default="../Data/")
     parser.add_option(
         "-l", "--learning-rate", dest="lr", default=0.0001)
     parser.add_option(
