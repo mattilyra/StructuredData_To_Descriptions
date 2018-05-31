@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os.path
 import time
@@ -154,7 +154,7 @@ class run_model:
 
         total_loss = 0
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
 
             # Get the next batch
 
@@ -242,7 +242,7 @@ class run_model:
         total_loss = 0
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch): 
+        for step in range(steps_per_epoch): 
             train_content, train_title, train_labels, train_field, sequence_length, train_weights, max_content, max_title = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
             
@@ -271,7 +271,7 @@ class run_model:
         f2 = open(self.config.outdir + data_set.name + "_attention_weights" + str(epoch) , "wb")
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
             train_content, train_title, train_labels, train_field, sequence_length, train_weights, max_content, max_title = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
 
@@ -358,8 +358,8 @@ class run_model:
 
             tf.set_random_seed(1357)
 
-            self.config.max_sequence_length_content = max(val.max_length_content for i,val in self.dataset.datasets.iteritems())
-            self.config.max_sequence_length_title = max(val.max_length_title for i,val in self.dataset.datasets.iteritems())
+            self.config.max_sequence_length_content = max(val.max_length_content for i,val in self.dataset.datasets.items())
+            self.config.max_sequence_length_title = max(val.max_length_title for i,val in self.dataset.datasets.items())
 
 
             len_vocab = self.dataset.length_vocab()
@@ -418,7 +418,7 @@ class run_model:
             # To store the model that gives the best result on validation.
             best_val_epoch = 0
 
-            for epoch in xrange(self.config.max_epochs):
+            for epoch in range(self.config.max_epochs):
 
                 print ("Epoch: " + str(epoch))
                 start = time.time()

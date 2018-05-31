@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os.path
 import time
@@ -16,12 +16,12 @@ class Config:
 
     """ Config class represents the hyperparameters in a single
         object
-    """ 
+    """
 
     def __init__(self, learning_rate=0.0001, embedding_size=50, hidden_size=100,
-               batch_size = 64,max_epochs = 20, max_sequence_length_content = 100,
-               max_sequence_length_title=50,  early_stop=100, outdir="../out/",
-               emb_tr=False, feed_previous = 5, vocab_frequency = 73, embedding_dir = '../Data', print_frequency=200):
+                 batch_size = 64,max_epochs = 20, max_sequence_length_content = 100,
+                 max_sequence_length_title=50,  early_stop=100, outdir="../out/",
+                 emb_tr=False, feed_previous = 5, vocab_frequency = 73, embedding_dir = '../Data', print_frequency=200):
 
         """ Initialize the object with the parameters.
 
@@ -38,7 +38,7 @@ class Config:
         """
 
 
-	print ("Config", emb_tr)
+        print ("Config", emb_tr)
         config_file = open(outdir + "/config", "w")
 
         self.learning_rate = learning_rate
@@ -65,7 +65,7 @@ class Config:
         config_file.write("Early stop " + str(self.early_stop) + "\n")
         config_file.write("Embedding training" + str(self.emb_tr) + "\n")
         config_file.write("Feed Previous " + str(self.feed_previous) + "\n")
-        config_file.close() 
+        config_file.close()
 
 
 class run_model:
@@ -119,16 +119,16 @@ class run_model:
                 feed_dict : the dictionary created.
         """
 
-	#print ("Fill feed dictionary is")
-	#print (encoder_inputs)
-	#print (decoder_inputs)
-	#print (labels)
+        #print ("Fill feed dictionary is")
+        #print (encoder_inputs)
+        #print (decoder_inputs)
+        #print (labels)
         feed_dict = {
-        self.encode_input_placeholder : encoder_inputs,
-        self.decode_input_placeholder : decoder_inputs,
-        self.label_placeholder        : labels,
-        self.weights_placeholder      : weights,
-        self.feed_previous_placeholder: feed_previous,
+            self.encode_input_placeholder : encoder_inputs,
+            self.decode_input_placeholder : decoder_inputs,
+            self.label_placeholder        : labels,
+            self.weights_placeholder      : weights,
+            self.feed_previous_placeholder: feed_previous,
         }
 
         return feed_dict
@@ -152,7 +152,7 @@ class run_model:
 
         total_loss = 0
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
 
             # Get the next batch
 
@@ -187,8 +187,8 @@ class run_model:
             duration = time.time() - start_time
 
 
-	    #print ("Final outputs", len(outputs))
-	    #print (sess.run(tf.shape(outputs[0])))
+            #print ("Final outputs", len(outputs))
+            #print (sess.run(tf.shape(outputs[0])))
             #print('Trainable Variables') 
             #print ('\n'.join([v.name for v in tf.trainable_variables()]))
 
@@ -197,7 +197,7 @@ class run_model:
             #    print (x_shape.shape)
 
 
-	    #x = sess.run(self.model.grad, feed_dict = feed_dict)
+            #x = sess.run(self.model.grad, feed_dict = feed_dict)
             #print (x)
 
             sys.stdout.flush()
@@ -210,14 +210,14 @@ class run_model:
                 # Evaluate against the training set.
                 print('Training Data Eval:')
                 self.print_titles(sess, self.dataset.datasets["train"], 2)
-                    
+
                 # Evaluate against the validation set.
                 print('Step %d: loss = %.2f' % (step, loss_value))
                 print('Validation Data Eval:')
                 #loss_value = self.do_eval(sess,self.dataset.datasets["valid"])
                 self.print_titles(sess,self.dataset.datasets["valid"], 2)
                 #print('Step %d: loss = %.2f' % (step, loss_value))
-                    
+
                 # Evaluate against the test set.
                 #print('Test Data Eval:')
                 #loss_value = self.do_eval(sess,self.dataset.datasets["test"])
@@ -243,15 +243,15 @@ class run_model:
 
             Returns
                 Loss value : loss value for the given dataset.
-        """  
+        """
 
         total_loss = 0
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch): 
+        for step in range(steps_per_epoch):
             train_content, train_title, train_labels, train_weights, max_content, max_title= self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
-            
+
             feed_dict  = self.fill_feed_dict(train_content, train_title, train_labels, train_weights, feed_previous = True)
             loss_value = sess.run(self.loss_op, feed_dict=feed_dict)
             total_loss += loss_value
@@ -275,7 +275,7 @@ class run_model:
         f2 = open(self.config.outdir + data_set.name + "_attention_weights" + str(epoch), "wb")
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
             train_content, train_title, train_labels,  train_weights, max_content, max_title = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
 
@@ -293,7 +293,7 @@ class run_model:
             # tensor will be converted to [batch_size * sequence_length * symbols]
             ds = np.transpose(decoder_states)
             #attention_states = np.transpose(attention_states)
-            attn_state = np.transpose(attention_states)   
+            attn_state = np.transpose(attention_states)
             true_labels = np.transpose(train_labels)
             # Converts this to a length of batch sizes
             final_ds = ds.tolist()
@@ -361,8 +361,8 @@ class run_model:
 
             tf.set_random_seed(1357)
 
-            self.config.max_sequence_length_content = max(val.max_length_content for i,val in self.dataset.datasets.iteritems())
-            self.config.max_sequence_length_title = max(val.max_length_title for i,val in self.dataset.datasets.iteritems())
+            self.config.max_sequence_length_content = max(val.max_length_content for i,val in self.dataset.datasets.items())
+            self.config.max_sequence_length_title = max(val.max_length_title for i,val in self.dataset.datasets.items())
 
             len_vocab = self.dataset.length_vocab()
             initial_embeddings = self.dataset.vocab.embeddings
@@ -370,11 +370,11 @@ class run_model:
             self.add_placeholders()
 
             # Build a Graph that computes predictions from the inference model.
-            self.logits, self.attention_weights  = self.model.inference(self.encode_input_placeholder, self.decode_input_placeholder, 
-                                          self.config.embedding_size,
-                                          self.feed_previous_placeholder, len_vocab, self.config.hidden_size,
-                                          weights = self.weights_placeholder, initial_embedding=initial_embeddings, 
-                                          embedding_trainable=self.config.emb_tr)
+            self.logits, self.attention_weights  = self.model.inference(self.encode_input_placeholder, self.decode_input_placeholder,
+                                                                        self.config.embedding_size,
+                                                                        self.feed_previous_placeholder, len_vocab, self.config.hidden_size,
+                                                                        weights = self.weights_placeholder, initial_embedding=initial_embeddings,
+                                                                        embedding_trainable=self.config.emb_tr)
 
             # Add to the Graph the Ops for loss calculation.
             self.loss_op = self.model.loss_op(self.logits, self.label_placeholder, self.weights_placeholder, len_vocab)
@@ -386,7 +386,7 @@ class run_model:
             # Add the variable initializer Op.
             init = tf.initialize_all_variables()
             print ("Init done")
-         
+
             # Create a saver for writing training checkpoints.
             saver = tf.train.Saver()
 
@@ -415,12 +415,12 @@ class run_model:
             else:
                 # Run the Op to initialize the variables.
                 sess.run(init)
-	        best_val_loss = float('inf')
+                best_val_loss = float('inf')
 
             # To store the model that gives the best result on validation.
             best_val_epoch = 0
 
-            for epoch in xrange(self.config.max_epochs):
+            for epoch in range(self.config.max_epochs):
 
                 print ("Epoch: " + str(epoch))
                 start = time.time()
@@ -451,9 +451,9 @@ class run_model:
 
 def main():
     parser = OptionParser()
- 
+
     parser.add_option(
-    "-w", "--work-dir", dest="wd", default="../Data/")
+        "-w", "--work-dir", dest="wd", default="../Data/")
     parser.add_option(
         "-l", "--learning-rate", dest="lr", default=0.0001)
     parser.add_option(

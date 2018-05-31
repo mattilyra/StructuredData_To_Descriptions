@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 # We disable pylint because we need python3 compatibility.
 from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -259,7 +259,7 @@ def vad_decoder(decoder_inputs,
     attention_vec_size_state  = attn_size_state  # Size of query vectors for attention.
     attention_vec_size_field_state = attn_size_field_state
 
-    for a in xrange(num_heads):
+    for a in range(num_heads):
       k = variable_scope.get_variable("AttnW_State_%d" % a,
                                       [1, 1, attn_size_state, attention_vec_size_state])
 
@@ -269,7 +269,7 @@ def vad_decoder(decoder_inputs,
           variable_scope.get_variable("AttnV_State_%d" % a, [attention_vec_size_state]))
 
 
-    for a in xrange(num_heads):
+    for a in range(num_heads):
       k = variable_scope.get_variable("AttnW_State_F_%d" % a,
                                       [1, 1, attn_size_field_state, attention_vec_size_field_state])
 
@@ -291,7 +291,7 @@ def vad_decoder(decoder_inputs,
           if ndims:
             assert ndims == 2
         query = array_ops.concat(1, query_list)
-      for a in xrange(num_heads):
+      for a in range(num_heads):
         with variable_scope.variable_scope("Attention_" +  name):
           y = linear(query, attention_vec_size_state, True)
           y = array_ops.reshape(y, [-1, 1, 1, attention_vec_size_state])
@@ -318,7 +318,7 @@ def vad_decoder(decoder_inputs,
           if ndims:
             assert ndims == 2
         query = array_ops.concat(1, query_list)
-      for a in xrange(num_heads):
+      for a in range(num_heads):
         with variable_scope.variable_scope("Attention_f" +  name):
           y = linear(query, attention_vec_size_field_state, True)
           y = array_ops.reshape(y, [-1, 1, 1, attention_vec_size_field_state])
@@ -341,11 +341,11 @@ def vad_decoder(decoder_inputs,
     batch_attn_size_field_state = array_ops.pack([batch_size, attn_size_field_state])
 
     new_attns_state = [array_ops.zeros(batch_attn_size_state, dtype=dtype)
-             for _ in xrange(num_heads)]
+             for _ in range(num_heads)]
 
 
     attns_state_fields = [array_ops.zeros(batch_attn_size_field_state, dtype=dtype)
-             for _ in xrange(num_heads)]
+             for _ in range(num_heads)]
 
     for a in new_attns_state:  # Ensure the second shape of attention vectors is set.
       a.set_shape([None, attn_size_state])

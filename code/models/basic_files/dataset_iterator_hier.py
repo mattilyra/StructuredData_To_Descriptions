@@ -6,7 +6,7 @@ import sys
 import copy
 import os.path
 import tensorflow as tf
-from vocab import *
+from .vocab import *
 
 class Datatype:
 
@@ -35,10 +35,10 @@ class Datatype:
         self.number_of_examples = exm
         self.max_length_content = max_length_content
         self.max_length_title = max_length_title - 1
-    
+
         self.max_field = max_field
 
-        print (name, " " , max_length_content, " " , max_length_title)
+        print((name, " " , max_length_content, " " , max_length_title))
         self.global_count_train = 0
         self.global_count_test = 0
 
@@ -76,7 +76,7 @@ class PadDataset:
         for lines in data:
             if (len(lines) < max_length):
                 temp = np.lib.pad(lines, (0,max_length - len(lines)),
-                    'constant', constant_values=0)
+                                  'constant', constant_values=0)
             else:
                 temp = lines[:max_length]
             padded_data.append(temp)
@@ -107,7 +107,7 @@ class PadDataset:
         while (len(batch) < batch_size):
             batch.append(np.zeros(max_length, dtype = int))
             count = 0
-            
+
         batch = self.pad_data(batch,max_length)
 
         batch = np.transpose(batch)
@@ -116,37 +116,37 @@ class PadDataset:
     def next_batch(self, dt, batch_size, c=True):
         if (c is True):
             count = dt.global_count_train
-        
+
         else:
             count = dt.global_count_test
 
 
-        max_length_content = max(val.max_length_content for i,val in self.datasets.iteritems())
-        max_length_title   = max(val.max_length_title for i,val in self.datasets.iteritems())
-        max_field          = max(val.max_field for i, val in self.datasets.iteritems())
+        max_length_content = max(val.max_length_content for i,val in self.datasets.items())
+        max_length_title   = max(val.max_length_title for i,val in self.datasets.items())
+        max_field          = max(val.max_field for i, val in self.datasets.items())
 
         contents, count1 = self.make_batch(dt.content, batch_size,count, max_length_content)
         titles, _ = self.make_batch(dt.title, batch_size, count, max_length_title)
         labels, _ = self.make_batch(dt.labels, batch_size, count, max_length_title)
 
-        field, _ = self.make_batch(dt.field, batch_size, count, max_field) 
-        sequence_length_field, _ = self.make_batch(dt.sequence_length_field, batch_size, count, max_field) 
+        field, _ = self.make_batch(dt.field, batch_size, count, max_field)
+        sequence_length_field, _ = self.make_batch(dt.sequence_length_field, batch_size, count, max_field)
         weights = copy.deepcopy(titles)
 
         for i in range(titles.shape[0]):
             for j in range(titles.shape[1]):
                 if (weights[i][j] > 0):
-                        weights[i][j] = 1
+                    weights[i][j] = 1
                 else:
-                        weights[i][j] = 0
+                    weights[i][j] = 0
 
-        if (c == True): 
+        if (c == True):
             dt.global_count_train = count1 % dt.number_of_examples
         else:
             dt.global_count_test = count1 % dt.number_of_examples
-        
+
         return contents, titles, labels, field, sequence_length_field,  weights, max_length_content, max_length_title
-    
+
     def load_data_file(self,name, title_file, content_file, field_file, sequence_length_file):
 
         title = open(title_file,'rb')
@@ -162,7 +162,7 @@ class PadDataset:
         max_title = 0
         for lines in title:
 
-	    temp = [self.vocab.encode_word(word) for word in lines.split()]
+            temp = [self.vocab.encode_word(word) for word in lines.split()]
             if (len(temp) > max_title):
                 max_title = len(temp)
             title_encoded.append(temp[:-1])
@@ -183,7 +183,7 @@ class PadDataset:
             if (len(temp) > max_field):
                 max_field = len(temp)
             field_encoded.append(temp)
-        print name
+        print(name)
 
 
         max_l = 0
@@ -193,7 +193,7 @@ class PadDataset:
                 max_l = len(temp)
 
             sequence_length_list.append(temp)
-           
+
         return Datatype(name, title_encoded, label_encoded, content_encoded, field_encoded, sequence_length_list, len(title_encoded), max_content, max_title, max_field)
 
 
@@ -224,11 +224,11 @@ class PadDataset:
         s = ""
         for temp in (decoder_states):
             if temp not in self.vocab.index_to_word:
-                    word = "<unk>"
+                word = "<unk>"
             else:
                 word = self.vocab.decode_word(temp)
 
-    
+
             s = s + " " + word
 
         return s
@@ -236,7 +236,7 @@ class PadDataset:
 def main():
     x = PadDataset([sys.argv[1],sys.argv[2]])
     x.load_data()
-    print x.decode_to_sentence([2,1,2,3,4,5,8,7])
+    print(x.decode_to_sentence([2,1,2,3,4,5,8,7]))
     for i in range(0,10):
         x.next_batch(x.datasets["train"], 2,True)
         x.next_batch(x.datasets["train"],2, False)

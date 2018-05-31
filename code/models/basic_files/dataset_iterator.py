@@ -6,7 +6,7 @@ import sys
 import copy
 import os.path
 import tensorflow as tf
-from vocab import *
+from . vocab import *
 
 class Datatype:
 
@@ -39,11 +39,11 @@ class Datatype:
         self.labels = label
         self.number_of_examples = exm
         self.max_length_content = max_length_content
-	
-	# As said in the given example the length of the title
-	# will be one less than the length of the description
+
+        # As said in the given example the length of the title
+        # will be one less than the length of the description
         self.max_length_title = max_length_title - 1
- 
+
 
         self.global_count_train = 0
         self.global_count_test  = 0
@@ -82,7 +82,7 @@ class PadDataset:
         for lines in data:
             if (len(lines) < max_length):
                 temp = np.lib.pad(lines, (0,max_length - len(lines)),
-                    'constant', constant_values=0)
+                                  'constant', constant_values=0)
             else:
                 temp = lines[:max_length]
             padded_data.append(temp)
@@ -113,7 +113,7 @@ class PadDataset:
         while (len(batch) < batch_size):
             batch.append(np.zeros(max_length, dtype = int))
             idx = 0
-            
+
         batch = self.pad_data(batch,max_length)
 
         batch = np.transpose(batch)
@@ -122,43 +122,43 @@ class PadDataset:
     def next_batch(self, dt, batch_size, c=True):
 
         # c= True(False): Corresponds to the batch will be used for training(testing), 
-	# Pick datapoints after the previously trained(tested) (batch)example.
-	# idx denotes the index in the dataset
-	if (c is True):
+        # Pick datapoints after the previously trained(tested) (batch)example.
+        # idx denotes the index in the dataset
+        if (c is True):
             idx = dt.global_count_train
         else:
             idx = dt.global_count_test
 
         max_length_content = self.datasets["train"].max_length_content
         max_length_title   = self.datasets["train"].max_length_title
- 
-	# idx_temp to account for the fact that the number of examples
-	# might not be a multiple of batch_size. We need to keep track of overflow
-	# from the number of datapoints.
+
+        # idx_temp to account for the fact that the number of examples
+        # might not be a multiple of batch_size. We need to keep track of overflow
+        # from the number of datapoints.
         contents, idx_temp = self.make_batch(dt.content, batch_size, idx, max_length_content)
         titles, _ = self.make_batch(dt.title, batch_size, idx, max_length_title)
         labels, _ = self.make_batch(dt.labels, batch_size, idx, max_length_title)
- 
-	# titles contains the actual labels
-	# we make a copy of titles to ensure that we calculate
-	# loss for only those time steps which contain non pad symbols
+
+        # titles contains the actual labels
+        # we make a copy of titles to ensure that we calculate
+        # loss for only those time steps which contain non pad symbols
         weights = copy.deepcopy(titles)
 
         for i in range(titles.shape[0]):
             for j in range(titles.shape[1]):
-		# if weights[i][j] == 0 then the symbol is a pad
-		# and we do not want to compute loss for that time step
-		# else we compute the loss.
+                # if weights[i][j] == 0 then the symbol is a pad
+                # and we do not want to compute loss for that time step
+                # else we compute the loss.
                 if (weights[i][j] > 0):
-                        weights[i][j] = 1
+                    weights[i][j] = 1
                 else:
-                        weights[i][j] = 0
+                    weights[i][j] = 0
 
-        if (c == True): 
+        if (c == True):
             dt.global_count_train = idx_temp % dt.number_of_examples
         else:
             dt.global_count_test = idx_temp % dt.number_of_examples
-        
+
         return contents, titles, labels, weights, max_length_content, max_length_title
 
     def load_data_file(self,name, title_file, content_file):
@@ -173,7 +173,7 @@ class PadDataset:
         max_title = 0
         for lines in title:
 
-	    temp = [self.vocab.encode_word(word) for word in lines.split()]
+            temp = [self.vocab.encode_word(word) for word in lines.split()]
             if (len(temp) > max_title):
                 max_title = len(temp)
             title_encoded.append(temp[:-1])
@@ -186,13 +186,13 @@ class PadDataset:
                 max_content = len(temp)
             content_encoded.append(temp)
 
-        return Datatype(name = name, 
-			title = title_encoded, 
-			label = label_encoded,
-			content = content_encoded,
-			exm = len(title_encoded), 
-			max_length_content = max_content, 
-			max_length_title = max_title)
+        return Datatype(name = name,
+                        title = title_encoded,
+                        label = label_encoded,
+                        content = content_encoded,
+                        exm = len(title_encoded),
+                        max_length_content = max_content,
+                        max_length_title = max_title)
 
     def load_data(self, wd="../Data/"):
 
@@ -205,8 +205,8 @@ class PadDataset:
 
 
     def __init__(self,  working_dir = "../Data/", embedding_size=100, vocab_frequency = 73,
-		 embedding_dir = "../Data/", global_count = 0):
-	
+                 embedding_dir = "../Data/", global_count = 0):
+
         filenames = [working_dir + "train_summary" , working_dir + "train_content"]
         #filenames = ["../DP_data/all_files"]
 
@@ -223,10 +223,10 @@ class PadDataset:
         s = ""
         for temp in (decoder_states):
             if temp not in self.vocab.index_to_word:
-                    word = "<unk>"
+                word = "<unk>"
             else:
                 word = self.vocab.decode_word(temp)
-    
+
             s = s + " " + word
         return s
 

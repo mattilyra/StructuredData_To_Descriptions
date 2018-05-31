@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as numpy
-from basic_files.vad import *
-from basic_files.rnn_cell import *
+from . basic_files.vad import *
+from . basic_files.rnn_cell import *
 
 import sys
 
@@ -136,11 +136,11 @@ class BasicAttention:
 def main():
     n = basic_attention_model(c)
     n.inference(int(100))
-    print "Inference"
+    print ("Inference")
     l = n.loss_op(n.final_outputs, int(100))
-    print "Loss"
+    print ("Loss")
     n.training(l)
-    print "Train"
+    print ("Train")
 
 if __name__ == '__main__':
     main()

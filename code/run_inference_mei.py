@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os.path
 import time
@@ -54,10 +54,10 @@ class Config:
         self.emb_tr     = emb_tr
         self.early_stop = early_stop
         self.embedding_dir = embedding_dir
-	self.vocab_frequency = vocab_frequency
-	self.feed_previous = feed_previous
-	self.gamma_param = gamma_param
-	self.print_frequency = print_frequency
+        self.vocab_frequency = vocab_frequency
+        self.feed_previous = feed_previous
+        self.gamma_param = gamma_param
+        self.print_frequency = print_frequency
 
         config_file.write("Learning rate " + str(self.learning_rate) + "\n")
         config_file.write("Embedding size " + str(self.embedding_size) + "\n")
@@ -125,19 +125,19 @@ class run_inference:
                 feed_dict : the dictionary created.
         """
 
-	#print ("Fill feed dictionary is")
-	#print (encoder_inputs)
-	#print (decoder_inputs)
-	#print (labels)
+        #print ("Fill feed dictionary is")
+        #print (encoder_inputs)
+        #print (decoder_inputs)
+        #print (labels)
         feed_dict = {
-        self.encode_input_placeholder : encoder_inputs,
-        self.decode_input_placeholder : decoder_inputs,
-        self.label_placeholder        : labels,
-        self.query_input_placeholder  : query, 
-        self.field_input_placeholder  : field, 
-        self.sequence_length_input_placeholder  : sequence_length, 
-        self.weights_placeholder      : weights,
-        self.feed_previous_placeholder: feed_previous,
+            self.encode_input_placeholder : encoder_inputs,
+            self.decode_input_placeholder : decoder_inputs,
+            self.label_placeholder        : labels,
+            self.query_input_placeholder  : query,
+            self.field_input_placeholder  : field,
+            self.sequence_length_input_placeholder  : sequence_length,
+            self.weights_placeholder      : weights,
+            self.feed_previous_placeholder: feed_previous,
         }
 
         return feed_dict
@@ -162,7 +162,7 @@ class run_inference:
 
         total_loss = 0
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
 
             # Get the next batch
 
@@ -198,8 +198,8 @@ class run_inference:
             duration = time.time() - start_time
 
 
-	    #print ("Final outputs", len(outputs))
-	    #print (sess.run(tf.shape(outputs[0])))
+            #print ("Final outputs", len(outputs))
+            #print (sess.run(tf.shape(outputs[0])))
             #print('Trainable Variables') 
             #print ('\n'.join([v.name for v in tf.trainable_variables()]))
 
@@ -208,7 +208,7 @@ class run_inference:
             #    print (x_shape.shape)
 
 
-	    #x = sess.run(self.model.grad, feed_dict = feed_dict)
+	        #x = sess.run(self.model.grad, feed_dict = feed_dict)
             #print (x)
 
 
@@ -250,7 +250,7 @@ class run_inference:
         total_loss = 0
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch): 
+        for step in range(steps_per_epoch): 
             train_content, train_title, train_labels, train_query, train_field, sequence_length, train_weights, max_content, max_title, max_query = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
             
@@ -279,7 +279,7 @@ class run_inference:
         f2 = open(self.config.outdir + data_set.name + "_attention_weights" + str(epoch) , "wb")
         steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in xrange(steps_per_epoch):
+        for step in range(steps_per_epoch):
             train_content, train_title, train_labels, train_query, train_field, sequence_length, train_weights, max_content, max_title, max_query = self.dataset.next_batch(
                 data_set,self.config.batch_size, False)
 

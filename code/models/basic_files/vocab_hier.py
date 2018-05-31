@@ -1,14 +1,15 @@
 import os.path
 import operator
 import pickle
-from nltk.tokenize import WhitespaceTokenizer 
+from nltk.tokenize import WhitespaceTokenizer
 from gensim.models import Word2Vec
 import gensim
 from collections import defaultdict
 from math import sqrt
-import numpy as np 
+import numpy as np
 import sys
-class Vocab():
+
+class Vocab:
     def __init__(self):
 
         """ Initalize the class parameters to default values
@@ -39,21 +40,21 @@ class Vocab():
         """
         sentences = []
 
-	if (os.path.exists(embedding_dir + 'vocab_len.pkl')):
-		vocab_len_stored = pickle.load(open(embedding_dir + "vocab_len.pkl"))
-	else:
-		vocab_len_stored = 0
+        if (os.path.exists(embedding_dir + 'vocab_len.pkl')):
+            vocab_len_stored = pickle.load(open(embedding_dir + "vocab_len.pkl"))
+        else:
+            vocab_len_stored = 0
 
-	if (vocab_len_stored == self.len_vocab and os.path.exists(embedding_dir + "embeddings.pkl")):
-		print ("Load file")
-		self.embeddings = pickle.load(open(embedding_dir +  "embeddings.pkl"))
-		return None
+        if vocab_len_stored == self.len_vocab and os.path.exists(embedding_dir + "embeddings.pkl"):
+            print ("Load file")
+            self.embeddings = pickle.load(open(embedding_dir +  "embeddings.pkl"), 'rb')
+            return None
 
-        if (os.path.exists(embedding_dir + 'embeddings') == True):
+        if os.path.exists(embedding_dir + 'embeddings'):
             #model = gensim.models.KeyedVectors.load_word2vec_format('../Data/embeddings.bin', binary = True)
             #model = Word2Vec.load_word2vec_format('../Data/embeddings.bin', binary = True)
             model = gensim.models.KeyedVectors.load_word2vec_format(embedding_dir + 'embeddings', binary=False)
-	    print ("Pretrained Embedding Loaded")
+            print ("Pretrained Embedding Loaded")
         else:
             for file in filenames:
                 with open(file, 'rb') as f:
@@ -90,13 +91,13 @@ class Vocab():
         if word in self.word_to_index:
             self.word_freq[word] = self.word_freq[word] + 1
 
-	elif word == "<pad>":
-	    return
+        elif word == "<pad>":
+            return
         else:
             index = len(self.word_to_index)
             self.word_to_index[word] = index
             self.word_freq[word] = 1
-        
+
     def create_reverse_dictionary(self):
 
         """ Creates a mapping from index to the words
@@ -104,11 +105,11 @@ class Vocab():
             indices to words.
         """
 
-        for key, val in self.word_to_index.iteritems():
+        for key, val in self.word_to_index.items():
             self.index_to_word[val] = key
 
     def construct_dictionary_single_file(self, filename):
-        
+
         """ Creates the dictionary from a single file.
 
             Arguments:
@@ -140,7 +141,7 @@ class Vocab():
                 temp_index_to_word[new_index] = key
                 new_index  = new_index + 1
 
-        print new_index
+        print (new_index)
         self.word_to_index = temp_word_to_index
 
 
@@ -149,7 +150,7 @@ class Vocab():
         """ Dictionary is made from all the files listed.
 
             Arguments :
-                * filenames = List of the filenames 
+                * filenames = List of the filenames
 
             Returns :
                 * None
@@ -164,9 +165,9 @@ class Vocab():
 
             Arguments :
                 * word: Given word is converted to index.
-    
+
             Returns:
-                * index of the word        
+                * index of the word
         """
         if word not in self.word_to_index:
             word = self.unknown
@@ -189,41 +190,40 @@ class Vocab():
 
     def get_embeddings_pretrained(self, embedding_size, embedding_dir):
 
-        """ Embeddings are appened based on the index of the 
+        """ Embeddings are appened based on the index of the
         word in the matrix self.embeddings.
         """
 
-        sorted_list = sorted(self.index_to_word.items(), key = operator.itemgetter(0))
+        sorted_list = sorted(list(self.index_to_word.items()), key = operator.itemgetter(0))
         np.random.seed(1357)
 
 
-	if (os.path.exists(embedding_dir + 'vocab_len.pkl')):
-		vocab_len_stored = pickle.load(open(embedding_dir + "vocab_len.pkl"))
-	else:
-		vocab_len_stored = 0
-	
-	if vocab_len_stored == self.len_vocab and os.path.exists(embedding_dir + "embeddings.pkl"):
-		self.embeddings = pickle.load(open(embedding_dir + "embeddings.pkl"))
-		return
+        if (os.path.exists(embedding_dir + 'vocab_len.pkl')):
+            vocab_len_stored = pickle.load(open(embedding_dir + "vocab_len.pkl"))
+        else:
+            vocab_len_stored = 0
+
+        if vocab_len_stored == self.len_vocab and os.path.exists(embedding_dir + "embeddings.pkl"):
+            self.embeddings = pickle.load(open(embedding_dir + "embeddings.pkl"))
+            return
 
         embeddings = []
-	count = 0
+        count = 0
         for index, word in sorted_list:
-
             try:
                 self.embeddings_model
 
                 if word in self.embeddings_model.vocab:
-			count = count + 1 
-                        embeddings.append(self.embeddings_model[word])
+                    count = count + 1
+                    embeddings.append(self.embeddings_model[word])
                 else:
-                        if word in ['<pad>', '<s>', '<eos>']:
-                                temp = np.zeros((embedding_size))
+                    if word in ['<pad>', '<s>', '<eos>']:
+                        temp = np.zeros((embedding_size))
 
-                        else:
-                                temp = np.random.uniform(-sqrt(3)/sqrt(embedding_size), sqrt(3)/sqrt(embedding_size), (embedding_size))
+                    else:
+                        temp = np.random.uniform(-sqrt(3)/sqrt(embedding_size), sqrt(3)/sqrt(embedding_size), (embedding_size))
 
-                        embeddings.append(temp)
+                    embeddings.append(temp)
 
             except:
                 if word in ['<pad>', '<s>', '<eos>']:
@@ -233,13 +233,12 @@ class Vocab():
 
                 embeddings.append(temp)
 
-	print ("Number of words in the count" , count)
+        print(("Number of words in the count" , count))
         self.embeddings = np.asarray(embeddings)
         self.embeddings = self.embeddings.astype(np.float32)
 
-
-	pickle.dump(self.embeddings, open(embedding_dir + "embeddings.pkl", "w"))
-	pickle.dump(self.len_vocab, open(embedding_dir + "vocab_len.pkl", "w"))
+        pickle.dump(self.embeddings, open(embedding_dir + "embeddings.pkl", "wb"))
+        pickle.dump(self.len_vocab, open(embedding_dir + "vocab_len.pkl", "wb"))
 
 
     def construct_vocab(self, filenames, embedding_size=100, vocab_frequency=74, embedding_dir="../Data/"):
@@ -258,7 +257,7 @@ class Vocab():
         self.construct_dictionary_multiple_files(filenames)
         self.fix_the_frequency(vocab_frequency)
         #self.remove_the_unfrequent(10000)
-        print "Length of the dictionary is " + str(len(self.word_to_index))
+        print(("Length of the dictionary is " + str(len(self.word_to_index))))
         sys.stdout.flush()
         self.add_constant_tokens()
         self.create_reverse_dictionary()
@@ -266,16 +265,16 @@ class Vocab():
         self.get_embeddings_pretrained(embedding_size, embedding_dir)
 
         self.len_vocab = len(self.word_to_index)
-        print "Length of the dictionary is " + str(len(self.word_to_index))
+        print(("Length of the dictionary is " + str(len(self.word_to_index))))
         self.total_words = float(sum(self.word_freq.values()))
 
 
     def plot_the_frequencies(self):
-        
-        x = self.index_to_word.keys()
+
+        x = list(self.index_to_word.keys())
         y = []
 
-        for i in self.index_to_word.values():
+        for i in list(self.index_to_word.values()):
             if i not in self.word_freq:
                 y.append(0)
             else:
@@ -291,7 +290,7 @@ def main():
     x.construct_vocab(filenames)
     #x.plot_the_frequencies()
 
-    "The vocab is " 
+    "The vocab is "
     #for i in x.word_to_index:
     #    print (i, x.word_freq[i])
 
