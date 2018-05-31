@@ -193,7 +193,7 @@ class Vocab:
             with open(embedding_dir + "min_frequency.pkl", 'rb') as fh:
                 min_frequency_stored = pickle.load(fh)
         else:
-            min_frequency_stored= 0
+            min_frequency_stored = 0
 
         if min_frequency_stored == self.min_frequency and os.path.exists(embedding_dir + "embeddings.pkl"):
             with open(embedding_dir + "embeddings.pkl", 'rb') as fh:
@@ -262,6 +262,6 @@ class Vocab:
 
         self.len_vocab = len(self.word_to_index)
         self.min_frequency = vocab_frequency
-        print(("Length of the dictionary is " + str(len(self.word_to_index))))
+        print(("Length of the dictionary is " + str(self.len_vocab)))
         self.total_words = float(sum(self.word_freq.values()))
 
