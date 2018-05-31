@@ -272,46 +272,47 @@ class run_model:
 
         """
         total_loss = 0
-        f1 = open(self.config.outdir + data_set.name + "_final_results" + str(epoch), "wb")
-        f2 = open(self.config.outdir + data_set.name + "_attention_weights" + str(epoch), "wb")
-        steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
+        _root = self.config.outdir + data_set.name
+        with open(_root + "_final_results" + str(epoch), "wb") as f1, \
+                open(_root + "_attention_weights" + str(epoch), "wb") as f2:
+            steps_per_epoch =  int(math.ceil(float(data_set.number_of_examples) / float(self.config.batch_size)))
 
-        for step in range(steps_per_epoch):
-            train_content, train_title, train_labels,  train_weights, max_content, max_title = self.dataset.next_batch(
-                data_set,self.config.batch_size, False)
+            for step in range(steps_per_epoch):
+                train_content, train_title, train_labels,  train_weights, max_content, max_title = self.dataset.next_batch(
+                    data_set,self.config.batch_size, False)
 
-            feed_dict = self.fill_feed_dict(train_content, train_title, train_labels, train_weights, feed_previous = True)
+                feed_dict = self.fill_feed_dict(train_content, train_title, train_labels, train_weights, feed_previous = True)
 
-            _decoder_states_ , attention_weights = sess.run([self.logits, self.attention_weights], feed_dict=feed_dict)
-            print('attn_wt shape', np.shape(attention_weights))
-            print('dec_state shape', np.shape(_decoder_states_))
+                _decoder_states_ , attention_weights = sess.run([self.logits, self.attention_weights], feed_dict=feed_dict)
+                print('attn_wt shape', np.shape(attention_weights))
+                print('dec_state shape', np.shape(_decoder_states_))
 
 
-            attention_states = np.array([np.argmax(i,1) for i in attention_weights])
-            # Pack the list of size max_sequence_length to a tensor
-            decoder_states = np.array([np.argmax(i,1) for i in _decoder_states_])
+                attention_states = np.array([np.argmax(i,1) for i in attention_weights])
+                # Pack the list of size max_sequence_length to a tensor
+                decoder_states = np.array([np.argmax(i,1) for i in _decoder_states_])
 
-            # tensor will be converted to [batch_size * sequence_length * symbols]
-            ds = np.transpose(decoder_states)
-            #attention_states = np.transpose(attention_states)
-            attn_state = np.transpose(attention_states)
-            true_labels = np.transpose(train_labels)
-            # Converts this to a length of batch sizes
-            final_ds = ds.tolist()
-            final_as = attn_state.tolist()
-            true_labels = true_labels.tolist()
+                # tensor will be converted to [batch_size * sequence_length * symbols]
+                ds = np.transpose(decoder_states)
+                #attention_states = np.transpose(attention_states)
+                attn_state = np.transpose(attention_states)
+                true_labels = np.transpose(train_labels)
+                # Converts this to a length of batch sizes
+                final_ds = ds.tolist()
+                final_as = attn_state.tolist()
+                true_labels = true_labels.tolist()
 
-            #print(final_ds)
-            for i, states in enumerate(final_ds):
+                #print(final_ds)
+                for i, states in enumerate(final_ds):
 
-                # Get the index of the highest scoring symbol for each time step
-                #indexes = sess.run(tf.argmax(states, 1))
-                s =  self.dataset.decode_to_sentence(states)
-                t =  self.dataset.decode_to_sentence(true_labels[i])
-                f1.write(s + "\n")
-                f1.write(t +"\n")
-                x = " ".join(str(m) for m in final_as[i])
-                f2.write(x + "\n")
+                    # Get the index of the highest scoring symbol for each time step
+                    #indexes = sess.run(tf.argmax(states, 1))
+                    s =  self.dataset.decode_to_sentence(states)
+                    t =  self.dataset.decode_to_sentence(true_labels[i])
+                    f1.write((s + "\n").encode('utf8'))
+                    f1.write((t +"\n").encode('utf8'))
+                    x = " ".join(str(m) for m in final_as[i])
+                    f2.write((x + "\n").encode('utf8'))
 
 
     def print_titles(self, sess, data_set, total_examples):
