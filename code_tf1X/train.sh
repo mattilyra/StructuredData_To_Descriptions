@@ -41,7 +41,7 @@ fi
  
 if [ "$1" == "seq2seq" ]
 then 
-	python seq2seq_run_model.py --work-dir $data$2/ --learning-rate 0.0004 --embedding-size 300 --hidden-size 512 --batch-size 32 --epochs 20 --early_stop 5 --output_dir ../output/ --emb-train False --vocab-freq $vocab_frequency_cutoff --num-fields $num_fields --feed-previous 20 --embedding-dir ../$2$embedding/ --print_frequency 1000
+	python seq2seq_run_model.py --work-dir $data$2/ --learning-rate 0.0004 --embedding-size 300 --hidden-size 512 --batch-size 32 --epochs 20 --early_stop 5 --output_dir ../output/ --emb-train False --vocab-freq $vocab_frequency_cutoff --num-fields $num_fields --feed-previous 20 --embedding-dir ../$2$embedding/ --print_frequency 1000 --num_samples 1000
 
 elif [ "$1" == "hierarchy" ]
 then

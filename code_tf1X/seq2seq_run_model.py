@@ -58,6 +58,9 @@ def main():
     parser.add_option(
         "-c", "--print_frequency",help = "Print after these number of steps",  dest="print_frequency")
 
+    parser.add_option(
+        "--num_samples", help="The number of instances to load", dest="num_samples")
+
     option, args = parser.parse_args(sys.argv)
 
     if option.emb_tr:
@@ -66,8 +69,12 @@ def main():
         x = False
 
     c = Config(float(option.lr), int(option.emb_size), int(option.hid_size), int(option.batch_size),
-               int(option.epochs), early_stop=int(option.early_stop), outdir= option.outdir, emb_tr=x, feed_previous=int(option.feed_previous),
-               vocab_frequency = int(option.vocab_frequency), embedding_dir = option.embedding_dir, print_frequency = int(option.print_frequency))
+               int(option.epochs), early_stop=int(option.early_stop), outdir= option.outdir,
+               emb_tr=x, feed_previous=int(option.feed_previous),
+               vocab_frequency = int(option.vocab_frequency),
+               embedding_dir = option.embedding_dir,
+               print_frequency = int(option.print_frequency),
+               num_samples=int(option.num_samples))
 
     run_attention = run_model(option.wd, BasicAttention(), c)
     run_attention.run_training()

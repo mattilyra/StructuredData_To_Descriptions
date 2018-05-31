@@ -8,8 +8,8 @@ from optparse import OptionParser
 from models.basic_files.dataset_iterator import *
 import os
 
-class Config:
 
+class Config:
     """ Config class represents the hyperparameters in a single
         object
     """
@@ -17,7 +17,9 @@ class Config:
     def __init__(self, learning_rate=0.0001, embedding_size=50, hidden_size=100,
                  batch_size = 64,max_epochs = 20, max_sequence_length_content = 100,
                  max_sequence_length_title=50,  early_stop=100, outdir="../out/",
-                 emb_tr=False, feed_previous = 5, vocab_frequency = 73, embedding_dir = '../Data', print_frequency=200):
+                 emb_tr=False, feed_previous = 5, vocab_frequency = 73,
+                 embedding_dir = '../Data', print_frequency=200,
+                 num_samples=-1):
 
         """ Initialize the object with the parameters.
 
@@ -51,6 +53,7 @@ class Config:
         self.feed_previous = feed_previous
         self.vocab_frequency = vocab_frequency
         self.print_frequency = print_frequency
+        self.num_samples = num_samples
 
         config_file.write("Learning rate " + str(self.learning_rate) + "\n")
         config_file.write("Embedding size " + str(self.embedding_size) + "\n")
@@ -61,6 +64,7 @@ class Config:
         config_file.write("Early stop " + str(self.early_stop) + "\n")
         config_file.write("Embedding training" + str(self.emb_tr) + "\n")
         config_file.write("Feed Previous " + str(self.feed_previous) + "\n")
+        config_file.write("Number of Samples " + str(self.num_samples) + "\n")
         config_file.close()
 
 
@@ -81,7 +85,10 @@ class run_model:
         self.model   = bA
 
         # Vocabulary and datasets are initialized.
-        self.dataset = PadDataset(wd, self.config.embedding_size, self.config.vocab_frequency, self.config.embedding_dir)
+        self.dataset = PadDataset(wd, self.config.embedding_size,
+                                  self.config.vocab_frequency,
+                                  self.config.embedding_dir,
+                                  num_samples=self.config.num_samples)
 
     def add_placeholders(self):
 

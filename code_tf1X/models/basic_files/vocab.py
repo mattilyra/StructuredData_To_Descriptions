@@ -119,15 +119,14 @@ class Vocab:
                 * void
         """
         with open(filename, 'rb') as f:
-            for lines in f:
-                for words in lines.split():
-                    self.add_word(words)
+            for line in f:
+                for word in line.decode('utf8').split():
+                    self.add_word(word)
 
     def fix_the_frequency(self, limit=0):
-
         temp_word_to_index = {}
 
-        #get the list of the frequent words, upto the given limit.
+        # get the list of the frequent words, upto the given limit.
         word_list = []
         count = 0
 

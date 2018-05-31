@@ -48,6 +48,19 @@ class Datatype:
 
 
 class PadDataset:
+    def __init__(self,  working_dir = "../Data/", embedding_size=100, vocab_frequency = 73,
+                 embedding_dir = "../Data/", global_count = 0, num_samples=-1):
+
+        filenames = [working_dir + "train_summary" , working_dir + "train_content"]
+        #filenames = ["../DP_data/all_files"]
+
+        self.global_count = 0
+        self.vocab = Vocab()
+        self.vocab.construct_vocab(filenames, embedding_size, vocab_frequency, embedding_dir)
+
+        self.num_samples = num_samples
+        self.load_data(working_dir)
+
     def find_max_length(self, data, count, batch_size):
 
         """ Finds the maximum sequence length for data of 
@@ -158,38 +171,41 @@ class PadDataset:
 
         return contents, titles, labels, weights, max_length_content, max_length_title
 
-    def load_data_file(self,name, title_file, content_file):
+    def load_data_file(self, name, title_file, content_file, num_samples=-1):
+        with open(title_file, 'rb') as title, open(content_file, 'rb') as content:
+            title_encoded = []
+            content_encoded = []
+            label_encoded = []
 
-        title = open(title_file,'rb')
-        content = open(content_file,'rb')
+            max_title = 0
+            for i_line, lines in enumerate(title):
 
-        title_encoded = []
-        content_encoded = []
-        label_encoded = []
+                temp = [self.vocab.encode_word(word) for word in lines.split()]
+                if (len(temp) > max_title):
+                    max_title = len(temp)
+                title_encoded.append(temp[:-1])
+                label_encoded.append(temp[1:])
 
-        max_title = 0
-        for lines in title:
+                if 0 < num_samples <= i_line:
+                    break
 
-            temp = [self.vocab.encode_word(word) for word in lines.split()]
-            if (len(temp) > max_title):
-                max_title = len(temp)
-            title_encoded.append(temp[:-1])
-            label_encoded.append(temp[1:])
+            max_content = 0
+            for i_line, lines in enumerate(content):
+                temp = [self.vocab.encode_word(word) for word in lines.split()]
+                if (len(temp) > max_content):
+                    max_content = len(temp)
+                content_encoded.append(temp)
 
-        max_content = 0
-        for lines in content:
-            temp = [self.vocab.encode_word(word) for word in lines.split()]
-            if (len(temp) > max_content):
-                max_content = len(temp)
-            content_encoded.append(temp)
+                if 0 < num_samples <= i_line:
+                    break
 
-        return Datatype(name = name,
-                        title = title_encoded,
-                        label = label_encoded,
-                        content = content_encoded,
-                        exm = len(title_encoded),
-                        max_length_content = max_content,
-                        max_length_title = max_title)
+            return Datatype(name = name,
+                            title = title_encoded,
+                            label = label_encoded,
+                            content = content_encoded,
+                            exm = len(title_encoded),
+                            max_length_content = max_content,
+                            max_length_title = max_title)
 
     def load_data(self, wd="../Data/"):
 
@@ -198,23 +214,10 @@ class PadDataset:
         for i in ("train", "valid", "test"):
             temp_t = s + i + "_summary"
             temp_v = s + i + "_content"
-            self.datasets[i] = self.load_data_file(i, temp_t, temp_v)
-
-
-    def __init__(self,  working_dir = "../Data/", embedding_size=100, vocab_frequency = 73,
-                 embedding_dir = "../Data/", global_count = 0):
-
-        filenames = [working_dir + "train_summary" , working_dir + "train_content"]
-        #filenames = ["../DP_data/all_files"]
-
-        self.global_count = 0
-        self.vocab = Vocab()
-        self.vocab.construct_vocab(filenames, embedding_size, vocab_frequency, embedding_dir)
-        self.load_data(working_dir)
+            self.datasets[i] = self.load_data_file(i, temp_t, temp_v, num_samples=self.num_samples)
 
     def length_vocab(self):
         return self.vocab.len_vocab
-
 
     def decode_to_sentence(self, decoder_states):
         s = ""
