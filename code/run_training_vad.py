@@ -69,7 +69,6 @@ class Config:
 
 
 class run_model:
-
     def __init__(self, wd, bA, config = None):
 
         """ The model is initializer with the hyperparameters.
@@ -87,7 +86,6 @@ class run_model:
 
         # Vocabulary and datasets are initialized.
         self.dataset = PadDataset(wd, self.config.embedding_size, self.config.vocab_frequency, self.config.embedding_dir)
-
 
     def add_placeholders(self):
 

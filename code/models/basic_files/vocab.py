@@ -30,24 +30,25 @@ class Vocab:
 
 
     def get_global_embeddings(self, filenames, embedding_size, embedding_dir):
-
         """ Construct the Embedding Matrix for the sentences in filenames.
 
             Args:
                 filenames: File names of the training files.
                 embedding_size: Dimensions for the embedding to be used.
-        embedding_dir : Path to directory containing embeddings
+                embedding_dir : Path to directory containing embeddings
         """
         sentences = []
 
         if (os.path.exists(embedding_dir + 'min_frequency.pkl')):
-            min_frequency_stored = pickle.load(open(embedding_dir + "min_frequency.pkl"))
+            with open(embedding_dir + "min_frequency.pkl", 'rb') as fh:
+                min_frequency_stored = pickle.load(fh)
         else:
             min_frequency_stored = 0
 
-        if (min_frequency_stored == self.min_frequency and os.path.exists(embedding_dir + "embeddings.pkl")):
-            print ("Load file")
-            self.embeddings = pickle.load(open(embedding_dir +  "embeddings.pkl"))
+        if min_frequency_stored == self.min_frequency and os.path.exists(embedding_dir + "embeddings.pkl"):
+            print ("Load file", embedding_dir + "embeddings.pkl")
+            with open(embedding_dir + "embeddings.pkl", 'rb') as fh:
+                self.embeddings = pickle.load(fh)
             return
 
         if (os.path.exists(embedding_dir + 'embeddings') == True):
@@ -68,7 +69,6 @@ class Vocab:
 
         self.embeddings_model = model
 
-
     def add_constant_tokens(self):
 
         """ Adds the constant tokens in the dictionary.
@@ -76,7 +76,6 @@ class Vocab:
 
         self.word_to_index[self.padding]    = 0
         self.word_to_index[self.unknown]    = 1
-
 
     def add_word(self, word):
 
@@ -124,7 +123,6 @@ class Vocab:
                 for words in lines.split():
                     self.add_word(words)
 
-
     def fix_the_frequency(self, limit=0):
 
         temp_word_to_index = {}
@@ -140,8 +138,6 @@ class Vocab:
                 new_index  = new_index + 1
 
         self.word_to_index = temp_word_to_index
-
-
 
     def construct_dictionary_multiple_files(self, filenames):
 
@@ -187,30 +183,27 @@ class Vocab:
 
         return self.unknown
 
-
     def get_embeddings_pretrained(self, embedding_size, embedding_dir):
-
-        """ Embeddings are appended based on the index of the
-        word in the matrix self.embeddings.
+        """ Embeddings are appended based on the index of the word in the matrix self.embeddings.
         """
 
         sorted_list = sorted(list(self.index_to_word.items()), key = operator.itemgetter(0))
         np.random.seed(1357)
 
-
-        if (os.path.exists(embedding_dir + 'min_frequency.pkl')):
-            min_frequency_stored = pickle.load(open(embedding_dir + "min_frequency.pkl"))
+        if os.path.exists(embedding_dir + 'min_frequency.pkl'):
+            with open(embedding_dir + "min_frequency.pkl", 'rb') as fh:
+                min_frequency_stored = pickle.load(fh)
         else:
             min_frequency_stored= 0
 
         if min_frequency_stored == self.min_frequency and os.path.exists(embedding_dir + "embeddings.pkl"):
-            self.embeddings = pickle.load(open(embedding_dir + "embeddings.pkl"))
+            with open(embedding_dir + "embeddings.pkl", 'rb') as fh:
+                self.embeddings = pickle.load(fh)
             return
 
         embeddings = []
         count = 0
         for index, word in sorted_list:
-
             try:
                 self.embeddings_model
 
@@ -220,12 +213,10 @@ class Vocab:
                 else:
                     if word in ['<pad>', '<s>', '<eos>']:
                         temp = np.zeros((embedding_size))
-
                     else:
                         temp = np.random.uniform(-sqrt(3)/sqrt(embedding_size), sqrt(3)/sqrt(embedding_size), (embedding_size))
 
                     embeddings.append(temp)
-
             except:
                 if word in ['<pad>', '<s>', '<eos>']:
                     temp = np.zeros((embedding_size))
@@ -234,18 +225,16 @@ class Vocab:
 
                 embeddings.append(temp)
 
-        print(("Number of words in the count" , count))
+        print(("Number of words in the count", count))
         self.embeddings = np.asarray(embeddings)
         self.embeddings = self.embeddings.astype(np.float32)
 
-
-        pickle.dump(self.embeddings, open(embedding_dir + "embeddings.pkl", "wb"))
-        pickle.dump(self.min_frequency, open(embedding_dir + "min_frequency.pkl", "wb"))
-
+        with open(embedding_dir + "embeddings.pkl", "wb") as fh_emb,\
+                open(embedding_dir + "min_frequency.pkl", "wb") as fh_fq:
+            pickle.dump(self.embeddings, fh_emb)
+            pickle.dump(self.min_frequency, fh_fq)
 
     def construct_vocab(self, filenames, embedding_size=100, vocab_frequency=74, embedding_dir="../Data/"):
-
-
         """ Constructs the embeddings and  vocabs from the parameters given.
 
             Args:

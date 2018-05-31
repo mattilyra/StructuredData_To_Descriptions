@@ -41,20 +41,22 @@ class Vocab:
         sentences = []
 
         if (os.path.exists(embedding_dir + 'vocab_len.pkl')):
-            vocab_len_stored = pickle.load(open(embedding_dir + "vocab_len.pkl"))
+            with open(embedding_dir + "vocab_len.pkl", 'rb') as fh:
+                vocab_len_stored = pickle.load(fh)
         else:
             vocab_len_stored = 0
 
         if vocab_len_stored == self.len_vocab and os.path.exists(embedding_dir + "embeddings.pkl"):
-            print ("Load file")
-            self.embeddings = pickle.load(open(embedding_dir +  "embeddings.pkl"), 'rb')
+            print("Load file")
+            with open(embedding_dir +  "embeddings.pkl", 'rb') as fh:
+                self.embeddings = pickle.load(fh)
             return None
 
         if os.path.exists(embedding_dir + 'embeddings'):
             #model = gensim.models.KeyedVectors.load_word2vec_format('../Data/embeddings.bin', binary = True)
             #model = Word2Vec.load_word2vec_format('../Data/embeddings.bin', binary = True)
             model = gensim.models.KeyedVectors.load_word2vec_format(embedding_dir + 'embeddings', binary=False)
-            print ("Pretrained Embedding Loaded")
+            print("Pretrained Embedding Loaded")
         else:
             for file in filenames:
                 with open(file, 'rb') as f:

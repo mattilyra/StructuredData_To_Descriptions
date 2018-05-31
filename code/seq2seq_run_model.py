@@ -1,7 +1,3 @@
-
-
-
-
 import os.path
 import time
 import math
@@ -13,7 +9,6 @@ from models.vad_model import *
 from models.basic_files.dataset_iterator import *
 from run_training_vad import *
 import os
-
 
 
 def main():
@@ -63,20 +58,19 @@ def main():
     parser.add_option(
     "-c", "--print_frequency",help = "Print after these number of steps",  dest="print_frequency")
 
-    (option, args) = parser.parse_args(sys.argv)
+    option, args = parser.parse_args(sys.argv)
 
-
-    if (option.emb_tr == 'True'):
+    if option.emb_tr:
         x = True
     else:
         x = False 
+
     c = Config(float(option.lr), int(option.emb_size), int(option.hid_size), int(option.batch_size),
                 int(option.epochs), early_stop=int(option.early_stop), outdir= option.outdir, emb_tr=x, feed_previous=int(option.feed_previous), 
 		vocab_frequency = int(option.vocab_frequency), embedding_dir = option.embedding_dir, print_frequency = int(option.print_frequency))
 
     run_attention = run_model(option.wd, BasicAttention(), c)
     run_attention.run_training()
-
 
 
 if __name__ == '__main__':

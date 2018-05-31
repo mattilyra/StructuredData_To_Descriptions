@@ -8,29 +8,27 @@ import os.path
 import tensorflow as tf
 from . vocab import *
 
+
 class Datatype:
-
     def __init__(self, name,title,label, content, exm, max_length_content, max_length_title):
-
         """ Defines the dataset for each category valid/train/test
 
         Args:
             name : Name given to this partition. For e.g. train/valid/test
             title: The description of the input infobox.
-	    label: Correct labels that will be used for loss computation 
+            label: Correct labels that will be used for loss computation
             content: Input Infobox
             exm:  Number of samples in this dataset split
-	    
             max_length_content : Maximum length of input Infoboxes among all samples
             max_length_title: Maximum length of description among all samples
             
             global_count_train: pointer to retrieve the next batch during training
             global_count_test : pointer to retrieve the next batch during testing
-	    
-	    Example for title, label:
-	    	Description: <s> The apple is red <eos>
-		title: <s> The apple is red
-		label: The apple is red <eos>
+
+        Example for title, label:
+           Description: <s> The apple is red <eos>
+        title: <s> The apple is red
+        label: The apple is red <eos>
         """
 
         self.name = name
@@ -48,8 +46,8 @@ class Datatype:
         self.global_count_train = 0
         self.global_count_test  = 0
 
-class PadDataset:
 
+class PadDataset:
     def find_max_length(self, data, count, batch_size):
 
         """ Finds the maximum sequence length for data of 
@@ -64,7 +62,7 @@ class PadDataset:
         data = data[count:count + batch_size]
         return max(len(data[i]) for i,_ in enumerate(data))
 
-    def pad_data(self,data, max_length):
+    def pad_data(self, data, max_length):
 
         """ Pad the data to max_length given
 
@@ -88,7 +86,6 @@ class PadDataset:
             padded_data.append(temp)
 
         return padded_data
-
 
     def make_batch(self, data, batch_size, idx, max_length):
 
