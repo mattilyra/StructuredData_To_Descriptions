@@ -1,7 +1,3 @@
-
-
-
-
 import os.path
 import time
 import math
@@ -382,7 +378,7 @@ class run_model:
 
 
             # Add the variable initializer Op.
-            init = tf.initialize_all_variables()
+            init = tf.global_variables_initializer()
             print ("Init done")
 
             # Create a saver for writing training checkpoints.
@@ -392,7 +388,7 @@ class run_model:
             sess = tf.Session()
 
             # Instantiate a SummaryWriter to output summaries and the Graph.
-            summary_writer = tf.train.SummaryWriter(self.config.outdir + "Logs" ,sess.graph)
+            summary_writer = tf.summary.SummaryWriter(self.config.outdir + "Logs" ,sess.graph)
 
 
             # if best_model exists pick the weights from there:
