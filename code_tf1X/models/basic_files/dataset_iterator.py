@@ -10,7 +10,7 @@ from . vocab import *
 
 
 class Datatype:
-    def __init__(self, name,title,label, content, exm, max_length_content, max_length_title):
+    def __init__(self, name, title, label, content, exm, max_length_content, max_length_title):
         """ Defines the dataset for each category valid/train/test
 
         Args:
@@ -178,9 +178,9 @@ class PadDataset:
             label_encoded = []
 
             max_title = 0
-            for i_line, lines in enumerate(title):
+            for i_line, line in enumerate(title):
 
-                temp = [self.vocab.encode_word(word) for word in lines.split()]
+                temp = [self.vocab.encode_word(word) for word in line.decode('utf8').split()]
                 if (len(temp) > max_title):
                     max_title = len(temp)
                 title_encoded.append(temp[:-1])
@@ -190,8 +190,8 @@ class PadDataset:
                     break
 
             max_content = 0
-            for i_line, lines in enumerate(content):
-                temp = [self.vocab.encode_word(word) for word in lines.split()]
+            for i_line, line in enumerate(content):
+                temp = [self.vocab.encode_word(word) for word in line.decode('utf8').split()]
                 if (len(temp) > max_content):
                     max_content = len(temp)
                 content_encoded.append(temp)
